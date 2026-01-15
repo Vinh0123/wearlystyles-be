@@ -1,0 +1,39 @@
+import jwt from "jsonwebtoken"
+import jwtConfig from "@config/jwt"
+import type { RequestUser } from "@common/interfaces/request-user.interface"
+
+export const generateToken = (payload: Partial<RequestUser>): string => {
+  return jwt.sign(payload, jwtConfig.secret, {
+    expiresIn: jwtConfig.expiresIn,
+  })
+}
+
+export const generateRefreshToken = (payload: Partial<RequestUser>): string => {
+  return jwt.sign(payload, jwtConfig.refreshSecret, {
+    expiresIn: jwtConfig.refreshExpiresIn,
+  })
+}
+
+export const verifyToken = (token: string): RequestUser | null => {
+  try {
+    return jwt.verify(token, jwtConfig.secret) as RequestUser
+  } catch {
+    return null
+  }
+}
+
+export const verifyRefreshToken = (token: string): RequestUser | null => {
+  try {
+    return jwt.verify(token, jwtConfig.refreshSecret) as RequestUser
+  } catch {
+    return null
+  }
+}
+
+export const decodeToken = (token: string): RequestUser | null => {
+  try {
+    return jwt.decode(token) as RequestUser
+  } catch {
+    return null
+  }
+}
