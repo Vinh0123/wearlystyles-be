@@ -1,10 +1,20 @@
 import type { Request, Response, NextFunction } from "express"
 import { UserService } from "./user.service"
 import { SuccessResponse } from "@common/responses/success.response"
+import { AppError } from "@common/errors/app-error"
+import { MESSAGES } from "@common/constants/messages.constant"
+import { ErrorCode } from "@common/enums/error-code.enum"
 import type { CreateUserDTO, UpdateUserDTO } from "./user.dto"
 
 export class UserController {
   private userService = new UserService()
+  private parseUserId(id: string): number {
+    const parsed = Number.parseInt(id, 10)
+    if (Number.isNaN(parsed)) {
+      throw new AppError(MESSAGES.BAD_REQUEST, 400, ErrorCode.BAD_REQUEST)
+    }
+    return parsed
+  }
 
   async createUser(req: Request, res: Response, next: NextFunction) {
     try {
@@ -19,7 +29,7 @@ export class UserController {
 
   async getUserById(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params
+      const id = this.parseUserId(req.params.id)
       const result = await this.userService.getUserById(id)
 
       res.json(new SuccessResponse("User fetched successfully", result))
@@ -40,7 +50,7 @@ export class UserController {
 
   async updateUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params
+      const id = this.parseUserId(req.params.id)
       const data: UpdateUserDTO = req.body
       const result = await this.userService.updateUser(id, data)
 
@@ -52,7 +62,7 @@ export class UserController {
 
   async deleteUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = req.params
+      const id = this.parseUserId(req.params.id)
       const result = await this.userService.deleteUser(id)
 
       res.json(new SuccessResponse("User deleted successfully", result))

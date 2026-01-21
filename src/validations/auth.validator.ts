@@ -1,12 +1,11 @@
 import { z } from "zod"
-import { isValidEmail } from "@common/validators/email.validator"
+import { isValidEmail } from "@validations/email.validator"
 
 export const registerSchema = z.object({
   body: z.object({
     email: z.string().refine(isValidEmail, "Invalid email format"),
     password: z.string().min(6, "Password must be at least 6 characters"),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
+    fullName: z.string().min(1, "Full name is required").optional(),
   }),
 })
 

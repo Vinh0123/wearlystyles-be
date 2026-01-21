@@ -1,17 +1,15 @@
-import jwt from "jsonwebtoken"
+import jwt, { type SignOptions, type Secret } from "jsonwebtoken"
 import jwtConfig from "@config/jwt"
 import type { RequestUser } from "@common/interfaces/request-user.interface"
 
 export const generateToken = (payload: Partial<RequestUser>): string => {
-  return jwt.sign(payload, jwtConfig.secret, {
-    expiresIn: jwtConfig.expiresIn,
-  })
+  const options: SignOptions = { expiresIn: jwtConfig.expiresIn as SignOptions["expiresIn"] }
+  return jwt.sign(payload, jwtConfig.secret as Secret, options)
 }
 
 export const generateRefreshToken = (payload: Partial<RequestUser>): string => {
-  return jwt.sign(payload, jwtConfig.refreshSecret, {
-    expiresIn: jwtConfig.refreshExpiresIn,
-  })
+  const options: SignOptions = { expiresIn: jwtConfig.refreshExpiresIn as SignOptions["expiresIn"] }
+  return jwt.sign(payload, jwtConfig.refreshSecret as Secret, options)
 }
 
 export const verifyToken = (token: string): RequestUser | null => {

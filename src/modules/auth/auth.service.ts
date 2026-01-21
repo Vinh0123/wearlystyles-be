@@ -1,12 +1,12 @@
 import { UserRepository } from "@repositories/user.repository"
 import { hashPassword, comparePassword } from "@utils/hash.util"
-import { generateToken, generateRefreshToken } from "@utils/jwt.util"
+import { generateToken, generateRefreshToken, verifyRefreshToken } from "@utils/jwt.util"
 import { AuthError } from "@common/errors/auth-error"
 import { AppError } from "@common/errors/app-error"
 import { MESSAGES } from "@common/constants/messages.constant"
 import { ErrorCode } from "@common/enums/error-code.enum"
 import type { RegisterDTO, LoginDTO } from "./auth.dto"
-import type { User } from "@entities/user.entity"
+import type { User } from "@prisma/client"
 
 export class AuthService {
   private userRepository = new UserRepository()
@@ -25,15 +25,22 @@ export class AuthService {
     const user = await this.userRepository.create({
       email: data.email,
       password: hashedPassword,
-      firstName: data.firstName,
-      lastName: data.lastName,
+      role: "user",
+      status: "active",
+      profile: data.fullName
+        ? {
+            create: {
+              fullName: data.fullName,
+            },
+          }
+        : undefined,
     })
 
     // Generate tokens
-    const token = generateToken({ id: user.id, email: user.email, role: user.role })
-    const refreshToken = generateRefreshToken({ id: user.id, email: user.email })
+    const role = user.role ?? "user"
+    const token = generateToken({ id: user.id, email: user.email, role })
+    const refreshToken = generateRefreshToken({ id: user.id, email: user.email, role })
 
-    // Save refresh token
     await this.userRepository.update(user.id, { refreshToken })
 
     // Return user without password
@@ -59,13 +66,12 @@ export class AuthService {
     }
 
     // Generate tokens
-    const token = generateToken({ id: user.id, email: user.email, role: user.role })
-    const refreshToken = generateRefreshToken({ id: user.id, email: user.email })
+    const role = user.role ?? "user"
+    const token = generateToken({ id: user.id, email: user.email, role })
+    const refreshToken = generateRefreshToken({ id: user.id, email: user.email, role })
 
-    // Update refresh token and last login
     await this.userRepository.update(user.id, {
       refreshToken,
-      lastLoginAt: new Date(),
     })
 
     const { password, ...userWithoutPassword } = user
@@ -76,17 +82,23 @@ export class AuthService {
     }
   }
 
-  async logout(userId: string): Promise<void> {
+  async logout(userId: number): Promise<void> {
     await this.userRepository.update(userId, { refreshToken: null })
   }
 
   async refreshAccessToken(refreshToken: string): Promise<{ token: string }> {
-    const user = await this.userRepository.findByEmail(refreshToken)
+    const payload = verifyRefreshToken(refreshToken)
+    if (!payload) {
+      throw new AuthError(MESSAGES.AUTH_TOKEN_INVALID)
+    }
+
+    const user = await this.userRepository.findById(payload.id)
     if (!user || user.refreshToken !== refreshToken) {
       throw new AuthError(MESSAGES.AUTH_TOKEN_INVALID)
     }
 
-    const token = generateToken({ id: user.id, email: user.email, role: user.role })
+    const role = payload.role ?? user.role ?? "user"
+    const token = generateToken({ id: payload.id, email: payload.email, role })
     return { token }
   }
 }

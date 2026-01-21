@@ -43,25 +43,17 @@ const options = {
       schemas: {
         User: {
           type: "object",
-          required: ["id", "email", "firstName", "lastName", "role"],
+          required: ["id", "email", "role"],
           properties: {
             id: {
-              type: "string",
-              format: "uuid",
+              type: "integer",
+              format: "int32",
               description: "User ID",
             },
             email: {
               type: "string",
               format: "email",
               description: "User email address",
-            },
-            firstName: {
-              type: "string",
-              description: "User first name",
-            },
-            lastName: {
-              type: "string",
-              description: "User last name",
             },
             role: {
               type: "string",
@@ -135,7 +127,7 @@ const options = {
         },
         RegisterRequest: {
           type: "object",
-          required: ["email", "password", "firstName", "lastName"],
+          required: ["email", "password"],
           properties: {
             email: {
               type: "string",
@@ -148,13 +140,9 @@ const options = {
               minLength: 8,
               description: "Password (min 8 characters)",
             },
-            firstName: {
+            fullName: {
               type: "string",
-              description: "First name",
-            },
-            lastName: {
-              type: "string",
-              description: "Last name",
+              description: "Full name",
             },
           },
         },

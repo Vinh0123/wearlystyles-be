@@ -4,6 +4,7 @@ import { AppError } from "@common/errors/app-error"
 import { MESSAGES } from "@common/constants/messages.constant"
 import { ErrorCode } from "@common/enums/error-code.enum"
 import type { CreateUserDTO, UpdateUserDTO } from "./user.dto"
+import type { Prisma } from "@prisma/client"
 import type { PaginationQuery } from "@common/interfaces/pagination.interface"
 
 export class UserService {
@@ -19,15 +20,23 @@ export class UserService {
     const user = await this.userRepository.create({
       email: data.email,
       password: hashedPassword,
-      firstName: data.firstName,
-      lastName: data.lastName,
+      role: "user",
+      status: "active",
+      profile: data.fullName || data.avatar
+        ? {
+            create: {
+              fullName: data.fullName,
+              avatar: data.avatar,
+            },
+          }
+        : undefined,
     })
 
     const { password, ...userWithoutPassword } = user
     return userWithoutPassword
   }
 
-  async getUserById(id: string) {
+  async getUserById(id: number) {
     const user = await this.userRepository.findById(id)
     if (!user) {
       throw new AppError(MESSAGES.USER_NOT_FOUND, 404, ErrorCode.NOT_FOUND)
@@ -45,13 +54,29 @@ export class UserService {
     }
   }
 
-  async updateUser(id: string, data: UpdateUserDTO) {
+  async updateUser(id: number, data: UpdateUserDTO) {
     const user = await this.userRepository.findById(id)
     if (!user) {
       throw new AppError(MESSAGES.USER_NOT_FOUND, 404, ErrorCode.NOT_FOUND)
     }
 
-    const updated = await this.userRepository.update(id, data)
+    const updateData: Prisma.UserUpdateInput = {}
+    if (data.fullName || data.avatar) {
+      updateData.profile = {
+        upsert: {
+          update: {
+            fullName: data.fullName,
+            avatar: data.avatar,
+          },
+          create: {
+            fullName: data.fullName,
+            avatar: data.avatar,
+          },
+        },
+      }
+    }
+
+    const updated = await this.userRepository.update(id, updateData)
     if (!updated) {
       throw new AppError(MESSAGES.USER_NOT_FOUND, 404, ErrorCode.NOT_FOUND)
     }
@@ -60,7 +85,7 @@ export class UserService {
     return userWithoutPassword
   }
 
-  async deleteUser(id: string) {
+  async deleteUser(id: number) {
     const user = await this.userRepository.findById(id)
     if (!user) {
       throw new AppError(MESSAGES.USER_NOT_FOUND, 404, ErrorCode.NOT_FOUND)

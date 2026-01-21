@@ -6,6 +6,7 @@ interface IConfig {
   node_env: string
   port: number
   app_name: string
+  database_url: string
   database: {
     host: string
     port: number
@@ -44,6 +45,7 @@ const config: IConfig = {
   node_env: process.env.NODE_ENV || "development",
   port: Number.parseInt(process.env.PORT || "3000", 10),
   app_name: process.env.APP_NAME || "wearly-styles-be",
+  database_url: process.env.DATABASE_URL || "",
 
   database: {
     host: process.env.DB_HOST || "localhost",

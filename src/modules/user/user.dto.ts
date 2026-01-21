@@ -1,21 +1,19 @@
 export interface CreateUserDTO {
   email: string
-  firstName?: string
-  lastName?: string
+  fullName?: string
+  avatar?: string
   password: string
 }
 
 export interface UpdateUserDTO {
-  firstName?: string
-  lastName?: string
+  fullName?: string
   avatar?: string
 }
 
 export interface UserResponseDTO {
-  id: string
+  id: number
   email: string
-  firstName?: string
-  lastName?: string
+  fullName?: string
   avatar?: string
   role: string
   status: string

@@ -19,14 +19,13 @@
     "paths": {
       "@config/*": ["src/config/*"],
       "@common/*": ["src/common/*"],
-      "@entities/*": ["src/entities/*"],
-      "@repositories/*": ["src/repositories/*"],
+      "@repositories/*": ["src/common/repositories/*"],
       "@modules/*": ["src/modules/*"],
       "@api/*": ["src/api/*"],
-      "@middleware/*": ["src/middleware/*"],
-      "@utils/*": ["src/utils/*"],
+      "@middleware/*": ["src/common/middleware/*"],
+      "@utils/*": ["src/common/utils/*"],
       "@helpers/*": ["src/helpers/*"],
-      "@queues/*": ["src/queues/*"]
+      "@validations/*": ["src/validations/*"]
     }
   },
   "include": ["src/**/*"],

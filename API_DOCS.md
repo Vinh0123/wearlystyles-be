@@ -30,7 +30,7 @@ Currently supporting API v1 with planned v2 enhancements.
 
 ### Authentication
 
-- `POST /auth/register` - Register new user
+- `POST /mobile/auth/register` - Register new user (mobile only)
 - `POST /auth/login` - Login and get tokens
 - `POST /auth/logout` - Logout user
 - `POST /auth/refresh-token` - Refresh access token

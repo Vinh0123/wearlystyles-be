@@ -77,8 +77,8 @@
  *         in: path
  *         required: true
  *         schema:
- *           type: string
- *           format: uuid
+ *           type: integer
+ *           format: int32
  *     responses:
  *       200:
  *         description: User retrieved successfully
@@ -105,8 +105,8 @@
  *         in: path
  *         required: true
  *         schema:
- *           type: string
- *           format: uuid
+ *           type: integer
+ *           format: int32
  *     requestBody:
  *       required: true
  *       content:
@@ -149,8 +149,8 @@
  *         in: path
  *         required: true
  *         schema:
- *           type: string
- *           format: uuid
+ *           type: integer
+ *           format: int32
  *     responses:
  *       200:
  *         description: User deleted successfully
@@ -167,7 +167,7 @@ import { UserController } from "./user.controller"
 import { authMiddleware } from "@middleware/auth.middleware"
 import { roleMiddleware } from "@middleware/role.middleware"
 import { validateRequest } from "@middleware/validation.middleware"
-import { createUserSchema, updateUserSchema } from "./user.validator"
+import { createUserSchema, updateUserSchema } from "@validations/user.validator"
 import { ROLES } from "@common/constants/roles.constant"
 
 const router = Router()

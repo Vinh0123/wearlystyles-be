@@ -130,7 +130,7 @@ import { Router } from "express"
 import { AuthController } from "./auth.controller"
 import { validateRequest } from "@middleware/validation.middleware"
 import { authRateLimiter } from "@middleware/rate-limit.middleware"
-import { registerSchema, loginSchema } from "./auth.validator"
+import { registerSchema, loginSchema } from "@validations/auth.validator"
 
 const router = Router()
 const authController = new AuthController()

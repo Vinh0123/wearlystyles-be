@@ -1,33 +1,43 @@
 # Wearly Styles Backend API
 
-Enterprise-level REST API built with Express.js, TypeScript, and TypeORM.
+Enterprise-level REST API built with Express.js, TypeScript, and Prisma.
 
 ## Project Structure
 
 ```
 wearly-styles-be/
-├── src/
-│   ├── app.ts                      # Express app initialization
-│   ├── server.ts                   # Server entry point
-│   ├── config/                     # Configuration files
-│   ├── common/                     # Shared utilities and interfaces
-│   ├── entities/                   # Database entities
-│   ├── repositories/               # Data access layer
-│   ├── modules/                    # Business modules (Auth, User, Product)
-│   ├── api/                        # API versioning
-│   ├── middleware/                 # Custom middleware
-│   ├── utils/                      # Utility functions
-│   ├── helpers/                    # Helper functions
-│   ├── migrations/                 # Database migrations
-│   └── tests/                      # Test files
-├── docker/
-│   ├── Dockerfile
-│   └── docker-compose.yml
-├── logs/
-├── .env.example
-├── package.json
-├── tsconfig.json
-└── README.md
+  src/
+    app.ts                  # Express app initialization
+    server.ts               # Server entry point
+    api/                    # API versioning (v1, v2)
+    common/                 # Shared utilities and interfaces
+      constants/
+      enums/
+      errors/
+      interfaces/
+      middleware/
+      repositories/
+      responses/
+      utils/
+    config/                 # Configuration files
+    helpers/                # Helper functions
+    modules/                # Business modules (Auth, User, Prisma)
+      auth/
+      user/
+      prisma/
+    validations/            # Request validators (Zod)
+  prisma/
+    migrations/             # Prisma migrations
+    seed/                   # Prisma seed scripts
+    schema.prisma
+  docker/
+    Dockerfile
+  docker-compose.yml
+  logs/
+  .env.example
+  package.json
+  tsconfig.json
+  README.md
 ```
 
 ## Prerequisites
@@ -52,6 +62,8 @@ Copy `.env.example` to `.env` and update with your values:
 cp .env.example .env
 ```
 
+For Docker Compose, the default configuration uses `.env.example` so you can run containers without creating a local `.env`.
+
 ### 3. Database Setup
 
 ```bash
@@ -65,7 +77,7 @@ createdb wearly_styles
 ### 4. Run migrations
 
 ```bash
-npm run db:migrate:run
+npm run db:migrate
 ```
 
 ### 5. Start the server
@@ -102,7 +114,7 @@ Visit `http://localhost:3000/health` to verify the server is running.
 
 - ✅ TypeScript for type safety
 - ✅ Express.js web framework
-- ✅ TypeORM for database management
+- ✅ Prisma for database management
 - ✅ PostgreSQL database
 - ✅ JWT authentication
 - ✅ Role-based access control
@@ -143,7 +155,7 @@ The API uses a consistent error response format:
 ### Generate database migration
 
 ```bash
-npm run db:migrate:generate -- -n MigrationName
+npm run db:migrate -- --name MigrationName
 ```
 
 ### Run linter
@@ -179,7 +191,19 @@ docker run -p 3000:3000 wearly-styles-be:latest
 Or use Docker Compose:
 
 ```bash
-docker-compose up
+docker-compose up -d --build
+```
+
+Run database migrations in the API container:
+
+```bash
+docker-compose exec api npm run db:migrate
+```
+
+Optional seed data:
+
+```bash
+docker-compose exec api npm run db:seed
 ```
 
 ## Environment Variables
@@ -196,3 +220,4 @@ See `.env.example` for all available environment variables.
 ## License
 
 ISC
+

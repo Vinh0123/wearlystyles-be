@@ -1,4 +1,3 @@
-import "reflect-metadata"
 import { createApp } from "./app"
 import { initializeDatabase } from "@config/db"
 import config from "@config/env"
